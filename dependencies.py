@@ -4,6 +4,7 @@ from models import db, Usuario
 from sqlalchemy.orm import sessionmaker, Session
 from jose import jwt, JWTError
 
+# teste
 
 def pegar_sessao():
     try:    

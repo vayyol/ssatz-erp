@@ -81,7 +81,7 @@ async def entrada_estoque(schema: EntradaEstoqueSchema, session: Session = Depen
 
 # so para testes, apagar deposis
 @order_router.post("/criar-drops")
-async def criar_drop(session: Session = Depends(pegar_sessao)):
+async def criar_drop(session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
     new_drop = Drop(usuario_id=1)
     session.add(new_drop)
     session.commit()
@@ -176,7 +176,7 @@ async def cancelar_drop(id_drop: int, session: Session = Depends(pegar_sessao), 
 @order_router.post("/adicionar-item/{id_drop}")
 async def adicionar_item_drop(id_drop: int, 
                                 item_drop_schema: ItemDropSchema, 
-                                session: Session = Depends(pegar_sessao)):
+                                session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
     drop = session.query(Drop).filter(Drop.id==id_drop).first()
     # if usuario.id != drop.usuario_id:
     #     raise HTTPException(status_code=401, detail="sem autorizacao para adicionar produtos a esse drop")
@@ -202,7 +202,7 @@ async def adicionar_item_drop(id_drop: int,
     }
 
 @order_router.post("/remover-item/{id_item_drop}")
-async def remover_item_drop(id_item_drop: int, session: Session = Depends(pegar_sessao)):
+async def remover_item_drop(id_item_drop: int, session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
     item_drop = session.query(ItemDrop).filter(ItemDrop.id==id_item_drop).first()
     if not item_drop:
         raise HTTPException(status_code=400, detail="Item do drop nao encontrado")
@@ -282,7 +282,7 @@ async def registrar_custo(schema: RegistroCustoSchema, session: Session = Depend
 
 
 @order_router.delete("/apagar-custo/{id_registro}")
-async def apagar_custo(id_registro: int, session: Session = Depends(pegar_sessao)):
+async def apagar_custo(id_registro: int, session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
     registro = session.query(RegistroCusto).filter(RegistroCusto.id == id_registro).first()
     if not registro:
         raise HTTPException(status_code=404, detail="Registro de custo não encontrado.")
@@ -300,7 +300,7 @@ async def apagar_custo(id_registro: int, session: Session = Depends(pegar_sessao
 
 
 @order_router.get("/buscar-drops")
-async def buscar_drops(session: Session = Depends(pegar_sessao)):
+async def buscar_drops(session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
 
     drops = session.query(Drop).all()
     if not drops:
@@ -361,7 +361,7 @@ async def reativar_estoque(id_produto: int, session: Session = Depends(pegar_ses
     }
 
 @order_router.get("/buscar")
-async def buscar_estoque(session: Session = Depends(pegar_sessao)):
+async def buscar_estoque(session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
 
     produtos = session.query(Estoque).all()
     if not produtos:
@@ -371,7 +371,7 @@ async def buscar_estoque(session: Session = Depends(pegar_sessao)):
 
 
 @order_router.get("/excuir_tudo")
-async def excluir_tudo(session: Session = Depends(pegar_sessao)):
+async def excluir_tudo(session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
     session.query(MovimentacaoEstoque).delete()
     session.query(RegistroCusto).delete()
     session.query(ItemDrop).delete()
@@ -383,7 +383,7 @@ async def excluir_tudo(session: Session = Depends(pegar_sessao)):
     return {"message": "Todos os registros foram excluídos com sucesso."}
 
 @order_router.post("/criar-fornecedor")
-async def criar_fornecedor(schema: FornecedorSchema, session: Session = Depends(pegar_sessao)):
+async def criar_fornecedor(schema: FornecedorSchema, session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
     fornecedor = Fornecedor(
         nome=schema.nome,
         cnpj=schema.cnpj,

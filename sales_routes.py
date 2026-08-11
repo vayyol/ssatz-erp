@@ -5,7 +5,7 @@ from models import  Estoque, Usuario, RegistroCusto, MovimentacaoEstoque, ItemVe
 from main import bcrypt_context, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES 
 from schemas import EntradaEstoqueSchema, RegistroCustoSchema, ItemVendaSchema
 from datetime import datetime, timezone, timedelta
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, usuario
 from dateutil.relativedelta import relativedelta
 
 sales_router = APIRouter(prefix="/sales", tags=["sales"])
@@ -38,7 +38,7 @@ async def gerenciar_vendas():
 
 # so para testes, apagar deposis
 @sales_router.post("/criar-vendas")
-async def criar_vendas(session: Session = Depends(pegar_sessao)):
+async def criar_vendas(session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
     new_venda = Venda(usuario_id=1)
     session.add(new_venda)
     session.commit()
@@ -131,7 +131,7 @@ async def cancelar_venda(id_venda: int, session: Session = Depends(pegar_sessao)
 @sales_router.post("/adicionar-item/{id_venda}")
 async def adicionar_item_venda(id_venda: int, 
                                 item_venda_schema: ItemVendaSchema, 
-                                session: Session = Depends(pegar_sessao)):
+                                session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
     venda = session.query(Venda).filter(Venda.id==id_venda).first()
     # if usuario.id != venda.usuario_id:
     #     raise HTTPException(status_code=401, detail="sem autorizacao para adicionar produtos a esse venda")
@@ -157,7 +157,7 @@ async def adicionar_item_venda(id_venda: int,
     }
 
 @sales_router.post("/remover-item/{id_item_venda}")
-async def remover_item_venda(id_item_venda: int, session: Session = Depends(pegar_sessao)):
+async def remover_item_venda(id_item_venda: int, session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
     item_venda = session.query(ItemVenda).filter(ItemVenda.id==id_item_venda).first()
     if not item_venda:
         raise HTTPException(status_code=400, detail="Item do venda nao encontrado")
@@ -237,7 +237,7 @@ async def registrar_custo(schema: RegistroCustoSchema, session: Session = Depend
 
 
 @sales_router.delete("/apagar-custo/{id_registro}")
-async def apagar_custo(id_registro: int, session: Session = Depends(pegar_sessao)):
+async def apagar_custo(id_registro: int, session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
     registro = session.query(RegistroCusto).filter(RegistroCusto.id == id_registro).first()
     if not registro:
         raise HTTPException(status_code=404, detail="Registro de custo não encontrado.")
@@ -255,7 +255,7 @@ async def apagar_custo(id_registro: int, session: Session = Depends(pegar_sessao
 
 
 @sales_router.get("/buscar-vendas")
-async def buscar_vendas(session: Session = Depends(pegar_sessao)):
+async def buscar_vendas(session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
 
     vendas = session.query(Venda).all()
     if not vendas:
@@ -264,7 +264,7 @@ async def buscar_vendas(session: Session = Depends(pegar_sessao)):
     return vendas
 
 @sales_router.get("/buscar-venda/{id_venda}")
-async def buscarvenda(id_venda: int, session: Session = Depends(pegar_sessao)):
+async def buscarvenda(id_venda: int, session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
 
     venda = session.query(Venda).filter(Venda.id == id_venda).first()
     if not venda:
@@ -272,7 +272,7 @@ async def buscarvenda(id_venda: int, session: Session = Depends(pegar_sessao)):
     return venda
 
 @sales_router.get("/buscar-itens/{id_venda}")
-async def buscarItens(id_venda: int, session: Session = Depends(pegar_sessao)):
+async def buscarItens(id_venda: int, session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
 
     itens = session.query(ItemVenda).filter(ItemVenda.venda_id == id_venda).all()
     if not itens:

@@ -88,7 +88,7 @@ async def gerar_dashboard(usuario: Usuario = Depends(verificar_token)):
     }
 
 @auth_router.get("/listar-user")
-async def buscar_usuarios(session: Session = Depends(pegar_sessao)):
+async def buscar_usuarios(session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
     usuarios = session.query(Usuario).all()
     if not usuarios:
         raise HTTPException(status_code=404, detail="Sem usuarios criados.")

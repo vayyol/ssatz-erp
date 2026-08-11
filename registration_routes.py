@@ -22,7 +22,7 @@ async def registros():
         }  
 
 @registration_router.get("/buscar-registros")
-async def buscar_todos(session: Session = Depends(pegar_sessao)):
+async def buscar_todos(session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
     movimentacoes  = session.query(RegistroCusto).all()
     if not movimentacoes:
         raise HTTPException(status_code=404, detail="Nenhuma movimentação encontrada para a data especificada.")
@@ -30,7 +30,7 @@ async def buscar_todos(session: Session = Depends(pegar_sessao)):
     return movimentacoes
 
 @registration_router.get("/buscar-movimentacoes")
-async def buscar_movimentacoes(session: Session = Depends(pegar_sessao)):
+async def buscar_movimentacoes(session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
     movimentacoes = session.query(MovimentacaoEstoque).all()
     if not movimentacoes:
         raise HTTPException(status_code=404, detail="Nenhuma movimentação encontrada.")
