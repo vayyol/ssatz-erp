@@ -1,0 +1,59 @@
+ 
+sempre que fofr colocar executar a api, inserir no terminal
+uvicorn main:app --reload
+
+1- criar a pasta .venv no projeto e deixar ela ativada no cmd
+python -m venv .venv
+.venv\Scripts\activate.bat
+
+
+2- criar main.py e instalar as bibliotecas pelo cmd
+pip install fastapi uvicorn sqlalchemy passlib[bcrypt] python-jose[cryptography] python-dotenv python-multipart
+
+pip install sqlalchemy-utils
+pip install psycopg[binary]
+pip install psycopg2-binary
+pip install python-dateutil
+
+depois de criar o banco de dados
+pip install alembic
+pip uninstall bcrypt
+pip install bcrypt==4.0.1
+pip install resend
+ 
+
+3 - criar endpoints / rotas
+crie novos arquivos para organixar as rotas auth_routes.py
+
+
+4- depois de escrever o codigo do banco de dados, instalar uma bliblioteca pra adicionar o sistema de migração ao banco de dados 
+pip install alembic
+-agora inicialize o alemnbic no temrinal
+alembic init alembic
+-vá no alembic.ini e edidite a linha: sqlalchemy.url = driver://user:pass@localhost/dbname
+-troque o link pelo o mesmo do db = create_engine("sqlite:///banco.db") 
+- agora va para pasta alembic/env.py
+-agora  adicionar codigos no topo env.py
+
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+-agora no mesmo arquivo insira os codigos em cima de target_metadata = None e apaque o:
+    from models import Base
+    target_metadata = Base.metadata
+
+-finalmente só falta criar o banco de dados, rode no terminal
+quando for fazer a migração rodar no terminal
+    alembic revision --autogenerate -m "Initial Migration"
+-e para confirmar rode
+    alembic upgrade head
+
+- agora toda vez q for fazer uma edição na codigo do banco(editar criar ou excluir uma tabela), 
+fazer o processo de migração, bastando apenas rodar
+    alembic revision --autogenerate -m "Neew Migration"
+-e para confirmar rode
+    alembic upgrade head
+
+para testes  pip install requests

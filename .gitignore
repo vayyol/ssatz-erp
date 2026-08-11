@@ -1,0 +1,18 @@
+# Ambiente
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+
+# IDE
+.vscode/
+
+# Banco local
+*.db
+*.sqlite
