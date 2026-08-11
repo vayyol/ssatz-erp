@@ -5,7 +5,7 @@ from models import  Estoque, Usuario, RegistroCusto, MovimentacaoEstoque, ItemVe
 from main import bcrypt_context, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES 
 from schemas import EntradaEstoqueSchema, RegistroCustoSchema, ItemVendaSchema
 from datetime import datetime, timezone, timedelta
-from zoneinfo import ZoneInfo, usuario
+from zoneinfo import ZoneInfo
 from dateutil.relativedelta import relativedelta
 
 sales_router = APIRouter(prefix="/sales", tags=["sales"])
@@ -39,7 +39,7 @@ async def gerenciar_vendas():
 # so para testes, apagar deposis
 @sales_router.post("/criar-vendas")
 async def criar_vendas(session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
-    new_venda = Venda(usuario_id=1)
+    new_venda = Venda(usuario_id=usuario.id)
     session.add(new_venda)
     session.commit()
     return {

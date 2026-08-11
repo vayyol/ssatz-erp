@@ -57,7 +57,7 @@ async def entrada_estoque(schema: EntradaEstoqueSchema, session: Session = Depen
 
     #Registrar os custos da movimentação de estoque do tipo "DROP FINALIZADO"
     registro_custo = RegistroCusto(
-        usuario_id=1,
+        usuario_id=usuario.id,
         tipo="CRIAÇÃO",
         descricao=f"REGISTRANDO CUSTO PARA LOJA DE CROAÇÃO DE ID {novo_produto.id}",
         quantidade=1,
@@ -82,7 +82,7 @@ async def entrada_estoque(schema: EntradaEstoqueSchema, session: Session = Depen
 # so para testes, apagar deposis
 @order_router.post("/criar-drops")
 async def criar_drop(session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
-    new_drop = Drop(usuario_id=1)
+    new_drop = Drop(usuario_id=usuario.id)
     session.add(new_drop)
     session.commit()
     return {
@@ -309,7 +309,7 @@ async def buscar_drops(session: Session = Depends(pegar_sessao), usuario: Usuari
     return drops
 
 @order_router.get("/buscar-drop/{id_drop}")
-async def buscardrop(id_drop: int, session: Session = Depends(pegar_sessao)):
+async def buscardrop(id_drop: int, session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
 
     drop = session.query(Drop).filter(Drop.id == id_drop).first()
     if not drop:
@@ -317,7 +317,7 @@ async def buscardrop(id_drop: int, session: Session = Depends(pegar_sessao)):
     return drop
 
 @order_router.get("/buscar-itens/{id_drop}")
-async def buscarItens(id_drop: int, session: Session = Depends(pegar_sessao)):
+async def buscarItens(id_drop: int, session: Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
 
     itens = session.query(ItemDrop).filter(ItemDrop.drop_id == id_drop).all()
     if not itens:
