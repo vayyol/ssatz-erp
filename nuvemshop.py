@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Request
+import os
+import requests
 
 nuvem_router = APIRouter(prefix="/nuvemshop", tags=["Nuvemshop"])
 
@@ -32,9 +34,21 @@ async def customers_data_request(request: Request):
 
 @nuvem_router.get("/callback")
 async def nuvemshop_callback(code: str):
-    print("Código recebido da Nuvemshop:", code)
 
-    return {
-        "mensagem": "Autorização recebida!",
-        "code": code
-    }
+    client_id = os.getenv("NUVEMSHOP_CLIENT_ID")
+    client_secret = os.getenv("NUVEMSHOP_CLIENT_SECRET")
+
+    resposta = requests.post(
+        "https://www.nuvemshop.com.br/apps/authorize/token",
+        json={
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "grant_type": "authorization_code",
+            "code": code
+        }
+    )
+
+    print("STATUS:", resposta.status_code)
+    print("RESPOSTA:", resposta.text)
+
+    return resposta.json()
