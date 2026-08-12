@@ -33,9 +33,11 @@ from auth_routes import auth_router
 from order_routes import order_router
 from registration_routes import registration_router
 from sales_routes import sales_router
+from nuvemshop import nuvem_router
 
 
 app.include_router(auth_router)
 app.include_router(order_router)
 app.include_router(registration_router)
 app.include_router(sales_router)
+app.include_router(nuvem_router)
