@@ -28,3 +28,13 @@ async def customers_data_request(request: Request):
     print("CUSTOMERS DATA REQUEST:", data)
 
     return {"status": "ok"}
+
+
+@nuvem_router.get("/nuvemshop/callback")
+async def nuvemshop_callback(code: str):
+    print("Código recebido da Nuvemshop:", code)
+
+    return {
+        "mensagem": "Autorização recebida!",
+        "code": code
+    }
