@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, Column, String, Integer, Boolean, DateTime
 from sqlalchemy.orm import declarative_base, relationship
 from dotenv import load_dotenv
 import os
+from datetime import datetime
 
 load_dotenv()
 # Fetch variables
@@ -234,3 +235,23 @@ class Cupons(Base):
         self.taxaDesconto = taxaDesconto
         self.validade = validade
         self.status = status
+
+
+class NuvemshopIntegracao(Base):
+    __tablename__ = "nuvemshop_integracoes"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    user_id = Column(String, unique=True, nullable=False, index=True)
+
+    access_token = Column(String, nullable=False)
+
+    scope = Column(String, nullable=True)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    updated_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
