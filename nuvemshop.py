@@ -30,7 +30,7 @@ async def customers_data_request(request: Request):
     return {"status": "ok"}
 
 
-@nuvem_router.get("/nuvemshop/callback")
+@nuvem_router.get("/callback")
 async def nuvemshop_callback(code: str):
     print("Código recebido da Nuvemshop:", code)
 
