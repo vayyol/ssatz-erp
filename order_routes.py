@@ -55,6 +55,8 @@ async def entrada_estoque(schema: EntradaEstoqueSchema, session: Session = Depen
                            schema.preco_venda, schema.estoque, 0, 0, schema.estoque)
     session.add(novo_produto)
 
+    session.commit()
+
     #Registrar os custos da movimentação de estoque do tipo "DROP FINALIZADO"
     registro_custo = RegistroCusto(
         aditional_id=novo_produto.id,
