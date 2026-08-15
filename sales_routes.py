@@ -147,7 +147,7 @@ async def adicionar_item_venda(id_venda: int,
 
     item_venda = ItemVenda(venda.id, item_venda_schema.produto_id, item_venda_schema.quantidade, produto.preco_venda)
     venda.subtotal += item_venda.quantidade * produto.preco_venda
-    venda.valor_total += venda.subtotal 
+    venda.valor_total += item_venda.quantidade * produto.preco_venda 
     session.add(item_venda)
     session.commit()
     return {

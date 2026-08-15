@@ -195,7 +195,7 @@ async def adicionar_item_drop(id_drop: int,
 
     item_drop = ItemDrop(drop.id, item_drop_schema.produto_id, item_drop_schema.quantidade, produto.preco_custo)
     drop.subtotal += item_drop.quantidade * produto.preco_custo
-    drop.valor_total = drop.subtotal 
+    drop.valor_total += item_drop.quantidade * produto.preco_custo
     session.add(item_drop)
     session.commit()
     return {
