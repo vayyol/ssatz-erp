@@ -405,3 +405,101 @@ async def listar_fornecedores(session: Session = Depends(pegar_sessao), usuario:
         raise HTTPException(status_code=404, detail="Nenhum fornecedor encontrado.")
 
     return fornecedores
+
+
+@order_router.get("/vendas-produtos")
+async def listar_vendas_reestoque(session: Session = Depends(pegar_sessao)):
+    vendas = session.query(Venda).all()
+    if not vendas:
+        raise HTTPException(status_code=404, detail="Nenhuma venda encontrada.")
+    itens_venda = session.query(ItemVenda).all()
+    if not itens_venda:
+        raise HTTPException(status_code=404, detail="Nenhum item da venda encontrado.")
+    produtos = session.query(Estoque).all()
+
+    # Organiza os produtos pelo ID
+    produtos_por_id = {
+        produto.id: produto
+        for produto in produtos
+    }
+
+    # Organiza os itens pelo ID da venda
+    itens_por_venda = {}
+
+    for item in itens_venda:
+        if item.venda_id not in itens_por_venda:
+            itens_por_venda[item.venda_id] = []
+
+        produto = produtos_por_id.get(item.produto_id)
+
+        itens_por_venda[item.venda_id].append({
+            "id": item.id,
+            "produto_id": item.produto_id,
+            "nome_peca": produto.nome_peca if produto else None,
+            "quantidade": item.quantidade,
+            "preco": item.preco_unitario
+        })
+
+    vendas_com_itens = []
+
+    for venda in vendas:
+
+        vendas_com_itens.append({
+            "id": venda.id,
+            "usuario_id": venda.usuario_id,
+            "valor_total": venda.valor_total,
+            "status": venda.status,
+            "created_at": venda.created_at,
+            "itens": itens_por_venda.get(venda.id, [])
+        })
+
+    return vendas_com_itens
+
+
+@order_router.get("/reestoque-produtos")
+async def listar_reestoques(session: Session = Depends(pegar_sessao)):
+    reestoques = session.query(Drop).all()
+    if not reestoques:
+        raise HTTPException(status_code=404, detail="Nenhuma reestoque encontrada.")
+    itens_reestoque = session.query(ItemDrop).all()
+    if not itens_reestoque:
+        raise HTTPException(status_code=404, detail="Nenhum item da reestoque encontrado.")
+    produtos = session.query(Estoque).all()
+
+    # Organiza os produtos pelo ID
+    produtos_por_id = {
+        produto.id: produto
+        for produto in produtos
+    }
+
+    # Organiza os itens pelo ID da reestoque
+    itens_por_reestoque = {}
+
+    for item in itens_reestoque:
+        if item.reestoque_id not in itens_por_reestoque:
+            itens_por_reestoque[item.reestoque_id] = []
+
+        produto = produtos_por_id.get(item.produto_id)
+
+        itens_por_reestoque[item.reestoque_id].append({
+            "id": item.id,
+            "produto_id": item.produto_id,
+            "nome_peca": produto.nome_peca if produto else None,
+            "quantidade": item.quantidade,
+            "preco": item.preco_unitario
+        })
+
+    reestoques_com_itens = []
+
+    for reestoque in reestoques:
+
+        reestoques_com_itens.append({
+            "id": reestoque.id,
+            "usuario_id": reestoque.usuario_id,
+            "valor_total": reestoque.valor_total,
+            "status": reestoque.status,
+            "created_at": reestoque.created_at,
+            "itens": itens_por_reestoque.get(reestoque.id, [])
+        })
+
+    return reestoques_com_itens
