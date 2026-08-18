@@ -476,12 +476,12 @@ async def listar_reestoques(session: Session = Depends(pegar_sessao)):
     itens_por_reestoque = {}
 
     for item in itens_reestoque:
-        if item.reestoque_id not in itens_por_reestoque:
-            itens_por_reestoque[item.reestoque_id] = []
+        if item.drop_id not in itens_por_reestoque:
+            itens_por_reestoque[item.drop_id] = []
 
         produto = produtos_por_id.get(item.produto_id)
 
-        itens_por_reestoque[item.reestoque_id].append({
+        itens_por_reestoque[item.drop_id].append({
             "id": item.id,
             "produto_id": item.produto_id,
             "nome_peca": produto.nome_peca if produto else None,
