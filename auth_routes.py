@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt
 from sqlalchemy.orm import Session
 from models import Usuario
-from schemas import UsuarioSchema, LoginSchema
+from schemas import UsuarioSchema, LoginSchema, MudarSenhaSchema
 
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
@@ -94,3 +94,15 @@ async def buscar_usuarios(session: Session = Depends(pegar_sessao), usuario: Usu
         raise HTTPException(status_code=404, detail="Sem usuarios criados.")
         
     return usuarios
+
+@auth_router.post("/mudar_senha")
+async def mudar_senha(mudar_senha_schema: MudarSenhaSchema, usuario: Usuario = Depends(verificar_token), session: Session = Depends(pegar_sessao)):
+    if not bcrypt_context.verify(mudar_senha_schema.antiga_senha, usuario.senha):
+        raise HTTPException(status_code=401, detail="Senha antiga incorreta")
+    nova_senha_criptografada = bcrypt_context.hash(mudar_senha_schema.nova_senha)
+    usuario.senha = nova_senha_criptografada
+    usuario.updated_at = datetime.now(timezone.utc)
+    session.commit()
+    return {
+        "message": "Senha alterada com sucesso"
+    }

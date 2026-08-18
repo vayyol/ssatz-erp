@@ -72,3 +72,11 @@ class FornecedorSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class MudarSenhaSchema(BaseModel):
+    antiga_senha: str
+    nova_senha: str
+
+    class Config:
+        from_attributes = True
